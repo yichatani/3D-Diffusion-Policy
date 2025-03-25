@@ -2,9 +2,10 @@ import h5py
 import os
 import shutil
 
-ROOT_DIR = "/media/mldadmin/home/s124mdg32_04/episodes"
-POSITIVE_DIR = os.path.join(ROOT_DIR, "positive")
-NEGATIVE_DIR = os.path.join(ROOT_DIR, "negative")
+ROOT_DIR = "/home/ani/Dataset/episodes"
+ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
+POSITIVE_DIR = os.path.join(ROOT_DIR_2, "positive")
+NEGATIVE_DIR = os.path.join(ROOT_DIR_2, "negative")
 
 def ensure_dir(path):
     """
@@ -58,18 +59,18 @@ def move_file_by_label(path):
 
 
 if __name__ == "__main__":
-    for filename in os.listdir(ROOT_DIR):
+    for filename in os.listdir(ROOT_DIR_2):
         if filename.endswith(".h5"):
-            file_path = os.path.join(ROOT_DIR, filename)
+            file_path = os.path.join(ROOT_DIR_2, filename)
             try:
                 move_file_by_label(file_path)
             except Exception as e:
                 print(f"Error processing {file_path}: {e}")
     
-    #     path = ROOT_DIR + "/episode_7.h5"
-#     # read_structure(path)
-#     print("======")
-#     read_values(path,"label")
-#     # read_values(path, "agent_pos")
-#     # print("======")
-#     # read_values(path, "action")
+    # path = POSITIVE_DIR + "/episode_1.h5"
+    # read_structure(path)
+    # print("======")
+    # read_values(path,"label")
+    # read_values(path, "agent_pos")
+    # print("======")
+    # read_values(path, "action")
