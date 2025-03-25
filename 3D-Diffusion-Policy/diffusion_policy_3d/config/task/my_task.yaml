@@ -1,0 +1,32 @@
+# diffusion_policy_3d/config/task/my_task.yaml
+
+dataset:
+  _target_: diffusion_policy_3d.dataset.my_dataset.IsaacHDF5Dataset
+  hdf5_dir: /home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive  # 你的数据路径
+  horizon: 1
+  pad_before: 0
+  pad_after: 0
+  seed: 42
+  val_ratio: 0.1
+  max_train_episodes: 10
+  task_name: isaac_test
+
+env_runner:
+  _target_: diffusion_policy_3d.env_runner.my_env_runner.DummyRunner
+
+
+
+
+# dataset:
+#   _target_: diffusion_policy_3d.dataset.zarr_dataset.IsaacZarrDataset
+#   zarr_path: /home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive.zarr
+#   horizon: 1
+#   pad_before: 0
+#   pad_after: 0
+#   seed: 42
+#   val_ratio: 0.1
+#   max_train_episodes: 100
+#   task_name: realdex_positive
+
+# env_runner:
+#   _target_: diffusion_policy_3d.env_runner.dummy_runner.DummyRunner
