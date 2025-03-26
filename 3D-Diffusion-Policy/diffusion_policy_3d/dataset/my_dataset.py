@@ -24,7 +24,7 @@ def reconstruct_pointcloud(rgb, depth, visualize=False):
     depths = depth
     camera_matrix = [[531.29, 0.0, 224], [0.0, 531.29, 224], [0.0, 0.0, 1.0]]
     ((fx,_,cx),(_,fy,cy),(_,_,_)) = camera_matrix
-    scale = 1000.0  # if your depth is in mm, scale it to meters
+    scale = 1.0  # if your depth is in mm, scale it to meters
 
     # Construct pixel grid
     xmap, ymap = np.arange(depths.shape[1]), np.arange(depths.shape[0])

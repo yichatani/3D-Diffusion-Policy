@@ -8,6 +8,7 @@ import torch
 import torchvision
 import tqdm
 import pickle
+import open3d as o3d
 from termcolor import cprint
 from pathlib import Path
 from pytorch3d.ops import sample_farthest_points
@@ -20,14 +21,15 @@ def preprocess_image(image, img_size=84):
     image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
     return image
 
-def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
+def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
     extrinsics_matrix = np.array([
-        [ 0.5213259, -0.84716441, 0.10262438, 0.04268034],
-        [ 0.25161211, 0.26751035, 0.93012341, 0.15598059],
-        [-0.81542053, -0.45907589, 0.3526169,  0.47807532],
-        [ 0., 0., 0., 1. ]
+        [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
+        [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
+        [-0.084295,   -0.97705717, -0.19558536,  0.90482569],
+        [ 0.,          0.,          0.,          1.        ],
     ])
-    WORK_SPACE = [[0.65, 1.1], [0.45, 0.66], [-0.7, 0]]
+
+    WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0, 1.5]]
 
     # point_xyz = points[..., :3] * 0.00025
     point_xyz = points[..., :3]
@@ -41,6 +43,8 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
         (points[:, 2] > WORK_SPACE[2][0]) & (points[:, 2] < WORK_SPACE[2][1])
     )
     points = points[mask]
+    if points.shape[0] == 0:
+        raise ValueError("All points filtered out by WORK_SPACE constraints.")
 
     if use_cuda:
         pts_tensor = torch.from_numpy(points[:, :3]).unsqueeze(0).cuda()
@@ -53,8 +57,8 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     return np.hstack((sampled_pts, rgb))
 
 def main():
-    hdf5_dir = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive"  # change to your directory
-    save_zarr_path = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive.zarr"
+    hdf5_dir = "/home/ani/Dataset/episodes/positive"  # change to your directory
+    save_zarr_path = "/home/ani/Dataset/positive.zarr"
     camera = 'front'  # change to 'in_hand' or 'up' if needed
 
     episode_paths = sorted([
@@ -97,8 +101,14 @@ def main():
                     print(f"[Warning] Skipping frame {t} in {path} due to empty point cloud.")
                     continue
 
-                # pc = preprocess_point_cloud(pc_raw, use_cuda=True)
-                pc = pc_raw
+                pc = preprocess_point_cloud(pc_raw, use_cuda=True)
+                cloud = o3d.geometry.PointCloud()
+                cloud.points = o3d.utility.Vector3dVector(pc[:, :3])
+                cloud.colors = o3d.utility.Vector3dVector(pc[:, 3:])
+                o3d.visualization.draw_geometries([cloud])
+                exit()
+
+                # pc = pc_raw
 
                 img_list.append(img)
                 depth_list.append(dep)

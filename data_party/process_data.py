@@ -5,6 +5,7 @@ import h5py
 
 ROOT_DIR = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive"
 ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
+ROOT_DIR_3 = "/home/ani/Dataset/episodes/positive"
 POSITIVE_DIR = os.path.join(ROOT_DIR, "positive")
 NEGATIVE_DIR = os.path.join(ROOT_DIR, "negative")
 
@@ -80,7 +81,7 @@ def reconstruct_pointcloud(rgb, depth, visualize=False):
     depths = depth
     camera_matrix = [[531.29, 0.0, 224], [0.0, 531.29, 224], [0.0, 0.0, 1.0]]
     ((fx,_,cx),(_,fy,cy),(_,_,_)) = camera_matrix
-    scale = 1000.0  # if your depth is in mm, scale it to meters
+    scale = 1.0  # if your depth is in mm, scale it to meters
 
     # Construct pixel grid
     xmap, ymap = np.arange(depths.shape[1]), np.arange(depths.shape[0])
@@ -89,7 +90,8 @@ def reconstruct_pointcloud(rgb, depth, visualize=False):
     points_x = (xmap - cx) / fx * points_z
     points_y = (ymap - cy) / fy * points_z
 
-    mask = (points_z > 0) & (points_z < 2)  # optional: crop invalid range
+    # mask = (points_z > 0) & (points_z < 2)  # optional: crop invalid range
+    mask = (points_z > 0) & (points_z < 3)
     points = np.stack([points_x, points_y, points_z], axis=-1)[mask].astype(np.float32)
     colors = colors[mask].astype(np.float32)
 
@@ -111,7 +113,7 @@ def reconstruct_pointcloud(rgb, depth, visualize=False):
 
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR + "/episode_0.h5"
+    episode_path = ROOT_DIR_3 + "/episode_0.h5"
 
     index, agent_pos, action, cameras_data = load_episode_data(episode_path)
     # print("index:", index.shape)
@@ -126,7 +128,7 @@ if __name__ == "__main__":
     # rgb = read_values(path,"up/rgb")
     # print(rgb.shape, depth.shape)
 
-    point_cloud = reconstruct_pointcloud(cameras_data[0]["front"]["rgb"], cameras_data[0]["front"]["depth"])
+    point_cloud = reconstruct_pointcloud(cameras_data[2]["front"]["rgb"], cameras_data[2]["front"]["depth"],visualize=True)
     print("point_cloud shape:", point_cloud.shape)
 
     # point_cloud = reconstruct_pointcloud(cameras_data[20]["in_hand"]["rgb"], cameras_data[20]["in_hand"]["depth"])

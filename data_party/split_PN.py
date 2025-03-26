@@ -4,8 +4,8 @@ import shutil
 
 ROOT_DIR = "/home/ani/Dataset/episodes"
 ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
-POSITIVE_DIR = os.path.join(ROOT_DIR_2, "positive")
-NEGATIVE_DIR = os.path.join(ROOT_DIR_2, "negative")
+POSITIVE_DIR = os.path.join(ROOT_DIR, "positive")
+NEGATIVE_DIR = os.path.join(ROOT_DIR, "negative")
 
 def ensure_dir(path):
     """
@@ -59,13 +59,15 @@ def move_file_by_label(path):
 
 
 if __name__ == "__main__":
-    for filename in os.listdir(ROOT_DIR_2):
+    for filename in os.listdir(ROOT_DIR):
         if filename.endswith(".h5"):
-            file_path = os.path.join(ROOT_DIR_2, filename)
+            file_path = os.path.join(ROOT_DIR, filename)
             try:
                 move_file_by_label(file_path)
             except Exception as e:
                 print(f"Error processing {file_path}: {e}")
+    
+
     
     # path = POSITIVE_DIR + "/episode_1.h5"
     # read_structure(path)
