@@ -57,8 +57,10 @@ def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
     return np.hstack((sampled_pts, rgb))
 
 def main():
-    hdf5_dir = "/home/ani/Dataset/episodes/positive"  # change to your directory
-    save_zarr_path = "/home/ani/Dataset/positive.zarr"
+    # hdf5_dir = "/home/ani/Dataset/episodes/positive"  # change to your directory
+    # save_zarr_path = "/home/ani/Dataset/positive.zarr"
+    hdf5_dir = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive"
+    save_zarr_path = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodeqs/positive.zarr"
     camera = 'front'  # change to 'in_hand' or 'up' if needed
 
     episode_paths = sorted([
@@ -102,13 +104,7 @@ def main():
                     continue
 
                 pc = preprocess_point_cloud(pc_raw, use_cuda=True)
-                cloud = o3d.geometry.PointCloud()
-                cloud.points = o3d.utility.Vector3dVector(pc[:, :3])
-                cloud.colors = o3d.utility.Vector3dVector(pc[:, 3:])
-                o3d.visualization.draw_geometries([cloud])
-                exit()
-
-                # pc = pc_raw
+              
 
                 img_list.append(img)
                 depth_list.append(dep)

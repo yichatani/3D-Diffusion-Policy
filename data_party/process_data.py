@@ -2,12 +2,27 @@ import os
 import open3d as o3d
 import numpy as np
 import h5py
+import os
+import h5py
+import zarr
+import numpy as np
+import torch
+import torchvision
+import tqdm
+import pickle
+import open3d as o3d
+from termcolor import cprint
+from pathlib import Path
+from pytorch3d.ops import sample_farthest_points
 
-ROOT_DIR = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive"
-ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
-ROOT_DIR_3 = "/home/ani/Dataset/episodes/positive"
-POSITIVE_DIR = os.path.join(ROOT_DIR, "positive")
-NEGATIVE_DIR = os.path.join(ROOT_DIR, "negative")
+ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
+            "/home/ani/my_Isaac_main/my_Isaac/episodes",
+            "/home/ani/astar/my_Isaac/episodes",
+            "/home/ani/Dataset/episodes/positive"]
+# ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
+# ROOT_DIR_3 = "/home/ani/Dataset/episodes/positive"
+POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive")
+NEGATIVE_DIR = os.path.join(ROOT_DIR[1], "negative")
 
 def read_structure(path):
     """
@@ -25,8 +40,8 @@ def read_values(path, key):
     """
     with h5py.File(path, 'r') as f:
         dset = f[key]
-        print("Dataset shape:", dset.shape)
-        # print("First first value:", dset[0])
+        # print("Dataset shape:", dset.shape)
+        print("First first value:", dset[0])
         return dset[0]
     
 
@@ -110,29 +125,82 @@ def reconstruct_pointcloud(rgb, depth, visualize=False):
     return point_cloud
 
 
+def preprocess_image(image, img_size=84):
+    image = image.astype(np.float32)
+    image = torch.from_numpy(image).permute(2, 0, 1)  # HWC -> CHW
+    image = torchvision.transforms.functional.resize(image, (img_size, img_size))
+    image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
+    return image
+
+def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
+    extrinsics_matrix = np.array([
+        [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
+        [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
+        [-0.084295,   -0.97705717, -0.19558536,  0.90482569],
+        [ 0.,          0.,          0.,          1.        ],
+    ])
+
+    WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0, 1.5]]
+
+    # point_xyz = points[..., :3] * 0.00025
+    point_xyz = points[..., :3]
+    point_hom = np.concatenate([point_xyz, np.ones((point_xyz.shape[0], 1))], axis=1)
+    point_xyz = point_hom @ extrinsics_matrix.T
+    points[..., :3] = point_xyz[..., :3]
+
+    mask = (
+        (points[:, 0] > WORK_SPACE[0][0]) & (points[:, 0] < WORK_SPACE[0][1]) &
+        (points[:, 1] > WORK_SPACE[1][0]) & (points[:, 1] < WORK_SPACE[1][1]) &
+        (points[:, 2] > WORK_SPACE[2][0]) & (points[:, 2] < WORK_SPACE[2][1])
+    )
+    points = points[mask]
+    if points.shape[0] == 0:
+        raise ValueError("All points filtered out by WORK_SPACE constraints.")
+
+    if use_cuda:
+        pts_tensor = torch.from_numpy(points[:, :3]).unsqueeze(0).cuda()
+    else:
+        pts_tensor = torch.from_numpy(points[:, :3]).unsqueeze(0)
+    sampled_pts, indices = sample_farthest_points(pts_tensor, K=num_points)
+    sampled_pts = sampled_pts.squeeze(0).cpu().numpy()
+    indices = indices.cpu().squeeze(0)
+    rgb = points[indices.numpy(), 3:]
+    return np.hstack((sampled_pts, rgb))
 
 
-if __name__ == "__main__":
-    episode_path = ROOT_DIR_3 + "/episode_0.h5"
-
+def visualize_raw_pc(episode_path):
+    
     index, agent_pos, action, cameras_data = load_episode_data(episode_path)
-    # print("index:", index.shape)
-    # print("agent_pos:", agent_pos.shape)
-    # print("action:", action.shape)
-    # print("cameras_data:", cameras_data[2]["front"]["rgb"].shape)
-    # print("cameras_data:", cameras_data[2]["front"]["depth"].shape)
-
-
-    # read_structure(path)
-    # depth = read_values(path,"up/depth")
-    # rgb = read_values(path,"up/rgb")
-    # print(rgb.shape, depth.shape)
-
+    
     point_cloud = reconstruct_pointcloud(cameras_data[2]["front"]["rgb"], cameras_data[2]["front"]["depth"],visualize=True)
     print("point_cloud shape:", point_cloud.shape)
 
-    # point_cloud = reconstruct_pointcloud(cameras_data[20]["in_hand"]["rgb"], cameras_data[20]["in_hand"]["depth"])
 
-    # colors = read_values(path, "color")
-    # depths = read_values(path, "depth")
-    # reconstruct_pointcloud(colors, depths)
+def visualize_frame(camera,t,episode_path):
+
+    # for path in tqdm.tqdm(episode_paths, desc="Processing Episodes"):
+    with h5py.File(episode_path, "r") as f:
+        rgb = f[f"{camera}/rgb"][:]
+        depth = f[f"{camera}/depth"][:]
+        
+        pc_raw = reconstruct_pointcloud(rgb[t], depth[t])
+        if pc_raw.shape[0] < 32:
+            raise ValueError(f"[Warning] Skipping frame {t} in {episode_path} due to empty point cloud.")
+            
+        pc = preprocess_point_cloud(pc_raw, use_cuda=True)
+        cloud = o3d.geometry.PointCloud()
+        cloud.points = o3d.utility.Vector3dVector(pc[:, :3])
+        cloud.colors = o3d.utility.Vector3dVector(pc[:, 3:])
+        o3d.visualization.draw_geometries([cloud])
+
+
+
+
+if __name__ == "__main__":
+    episode_path = ROOT_DIR[1] + "/episode_15.h5"
+    print(episode_path)
+    # exit()
+    visualize_frame("front",250,episode_path)
+    read_values(episode_path,"label")
+
+  
