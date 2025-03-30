@@ -15,7 +15,7 @@ from omegaconf import OmegaConf
 @hydra.main(
     version_base=None,
     config_path="diffusion_policy_3d/config",
-    config_name="train_dp3"
+    config_name="isaac_dp3"
 )
 def main(cfg):
     workspace = TrainDP3Workspace(cfg)

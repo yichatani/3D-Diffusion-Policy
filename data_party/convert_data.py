@@ -14,6 +14,11 @@ from pathlib import Path
 from pytorch3d.ops import sample_farthest_points
 from process_data import reconstruct_pointcloud
 
+ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
+            "/home/ani/my_Isaac_main/my_Isaac/episodes",
+            "/home/ani/astar/my_Isaac/episodes",
+            "/home/ani/Dataset/episodes/positive"]
+
 def preprocess_image(image, img_size=84):
     image = image.astype(np.float32)
     image = torch.from_numpy(image).permute(2, 0, 1)  # HWC -> CHW
@@ -21,16 +26,14 @@ def preprocess_image(image, img_size=84):
     image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
     return image
 
-def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
+def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     extrinsics_matrix = np.array([
         [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
         [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
         [-0.084295,   -0.97705717, -0.19558536,  0.90482569],
         [ 0.,          0.,          0.,          1.        ],
     ])
-
     WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0, 1.5]]
-
     # point_xyz = points[..., :3] * 0.00025
     point_xyz = points[..., :3]
     point_hom = np.concatenate([point_xyz, np.ones((point_xyz.shape[0], 1))], axis=1)
@@ -57,10 +60,9 @@ def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
     return np.hstack((sampled_pts, rgb))
 
 def main():
-    # hdf5_dir = "/home/ani/Dataset/episodes/positive"  # change to your directory
-    # save_zarr_path = "/home/ani/Dataset/positive.zarr"
-    hdf5_dir = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive"
-    save_zarr_path = "/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodeqs/positive.zarr"
+
+    hdf5_dir = ROOT_DIR[1]
+    save_zarr_path = ROOT_DIR[1] + "/episodes.zarr"
     camera = 'front'  # change to 'in_hand' or 'up' if needed
 
     episode_paths = sorted([

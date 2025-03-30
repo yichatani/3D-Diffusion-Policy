@@ -159,9 +159,9 @@ class IsaacHDF5Dataset(BaseDataset):
 class IsaacZarrDataset(BaseDataset):
     def __init__(self,
                  zarr_path,
-                 horizon=1,
-                 pad_before=0,
-                 pad_after=0,
+                 horizon=16,
+                 pad_before=1,
+                 pad_after=7,
                  seed=42,
                  val_ratio=0.1,
                  max_train_episodes=None,

@@ -40,7 +40,7 @@ def read_values(path, key):
     """
     with h5py.File(path, 'r') as f:
         dset = f[key]
-        # print("Dataset shape:", dset.shape)
+        print("Dataset shape:", dset.shape)
         print("First first value:", dset[0])
         return dset[0]
     
@@ -132,7 +132,7 @@ def preprocess_image(image, img_size=84):
     image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
     return image
 
-def preprocess_point_cloud(points, num_points=2048, use_cuda=True):
+def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     extrinsics_matrix = np.array([
         [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
         [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
@@ -200,7 +200,9 @@ if __name__ == "__main__":
     episode_path = ROOT_DIR[1] + "/episode_15.h5"
     print(episode_path)
     # exit()
-    visualize_frame("front",250,episode_path)
+    # visualize_frame("front",250,episode_path)
     read_values(episode_path,"label")
+    read_values(episode_path,"action")
+    # read_structure(episode_path)
 
   
