@@ -197,7 +197,8 @@ def visualize_frame(camera,t,episode_path):
 
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[1] + "/episode_15.h5"
+    episode_path = ROOT_DIR[2] + "/positive/episode_9_2.h5"
+    episode_path = ROOT_DIR[2] + "/episode_0.h5"
     print(episode_path)
     # exit()
     # visualize_frame("front",250,episode_path)
