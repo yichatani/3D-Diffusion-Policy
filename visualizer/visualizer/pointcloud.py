@@ -9,6 +9,7 @@ import os
 
 def visualize_pointcloud(pointcloud, color:tuple=None):
     vis = Visualizer()
+    # color = vis.colorize(pointcloud)
     vis.visualize_pointcloud(pointcloud, color=color)
     
 class Visualizer:
@@ -37,7 +38,8 @@ class Visualizer:
             else:    
                 colors = ['rgb({},{},{})'.format(color[0], color[1], color[2]) for _ in range(len(x_coords))]
         else:
-            colors = ['rgb({},{},{})'.format(int(r), int(g), int(b)) for r, g, b in pointcloud[:, 3:6]]
+            colors = ['rgb({},{},{})'.format(int(r*255), int(g*255), int(b*255)) for r, g, b in pointcloud[:, 3:6]]
+            # print(colors)
 
         return go.Scatter3d(
             x=x_coords,

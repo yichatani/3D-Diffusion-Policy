@@ -14,11 +14,13 @@ import open3d as o3d
 from termcolor import cprint
 from pathlib import Path
 from pytorch3d.ops import sample_farthest_points
+from visualizer.pointcloud import visualize_pointcloud
 
 ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
             "/home/ani/my_Isaac_main/my_Isaac/episodes",
             "/home/ani/astar/my_Isaac/episodes",
-            "/home/ani/Dataset/episodes/positive"]
+            "/home/ani/Dataset/episodes/positive",
+            "/home/ani/Dataset/positive_1.zarr"]
 # ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
 # ROOT_DIR_3 = "/home/ani/Dataset/episodes/positive"
 POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive")
@@ -45,42 +47,6 @@ def read_values(path, key):
         return dset[0]
     
 
-def load_episode_data(episode_path):
-    """Reads HDF5 data with per-frame, per-camera D_min and D_max."""
-    with h5py.File(episode_path, "r") as f:
-        index = f["index"][:]
-        agent_pos = f["agent_pos"][:]
-        action = f["action"][:]
-
-        cameras = ["front", "in_hand", "up"]
-        num_frames = len(index)
-
-        cameras_data = [{} for _ in range(num_frames)]
-
-        for i in range(num_frames):
-            frame_data = {}
-            for cam in cameras:
-                rgb = f[f"{cam}/rgb"][i]
-                depth_uint16 = f[f"{cam}/depth"][i]
-
-                # Read per-frame D_min, D_max
-                D_min = f[f"{cam}/D_min"][i]
-                D_max = f[f"{cam}/D_max"][i]
-
-                # Decode to float depth
-                # depth = (depth_uint16.astype(np.float32) / 65535.0) * (D_max - D_min) + D_min
-                depth = depth_uint16
-
-                frame_data[cam] = {
-                    "rgb": rgb,
-                    "depth": depth,
-                    "D_min": D_min,
-                    "D_max": D_max
-                }
-
-            cameras_data[i] = frame_data
-
-    return index, agent_pos, action, cameras_data
 
 
 
@@ -132,7 +98,7 @@ def preprocess_image(image, img_size=84):
     image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
     return image
 
-def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
+def preprocess_point_cloud(points, num_points=1024 * 3, use_cuda=True):
     extrinsics_matrix = np.array([
         [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
         [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
@@ -141,6 +107,7 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     ])
 
     WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0, 1.5]]
+    # WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.80], [0, 1.5]]
 
     # point_xyz = points[..., :3] * 0.00025
     point_xyz = points[..., :3]
@@ -168,15 +135,7 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     return np.hstack((sampled_pts, rgb))
 
 
-def visualize_raw_pc(episode_path):
-    
-    index, agent_pos, action, cameras_data = load_episode_data(episode_path)
-    
-    point_cloud = reconstruct_pointcloud(cameras_data[2]["front"]["rgb"], cameras_data[2]["front"]["depth"],visualize=True)
-    print("point_cloud shape:", point_cloud.shape)
-
-
-def visualize_frame(camera,t,episode_path):
+def visualize_h5_frame(camera,t,episode_path):
 
     # for path in tqdm.tqdm(episode_paths, desc="Processing Episodes"):
     with h5py.File(episode_path, "r") as f:
@@ -188,21 +147,44 @@ def visualize_frame(camera,t,episode_path):
             raise ValueError(f"[Warning] Skipping frame {t} in {episode_path} due to empty point cloud.")
             
         pc = preprocess_point_cloud(pc_raw, use_cuda=True)
-        cloud = o3d.geometry.PointCloud()
-        cloud.points = o3d.utility.Vector3dVector(pc[:, :3])
-        cloud.colors = o3d.utility.Vector3dVector(pc[:, 3:])
-        o3d.visualization.draw_geometries([cloud])
+        # cloud = o3d.geometry.PointCloud()
+        # cloud.points = o3d.utility.Vector3dVector(pc[:, :3])
+        # cloud.colors = o3d.utility.Vector3dVector(pc[:, 3:])
+        # o3d.visualization.draw_geometries([cloud])
+        visualize_pointcloud(pc)
 
+
+def visualize_zarr_frame(zarr_path, frame_idx):
+    """
+    从 Zarr 文件中读取并可视化某一帧的点云。
+    """
+    cprint(f"Loading Zarr dataset from: {zarr_path}", "cyan")
+    root = zarr.open(zarr_path, mode='r')
+    
+    try:
+        pc_arr = root['data']['point_cloud']
+    except Exception as e:
+        cprint(f"Error loading point cloud dataset: {e}", "red")
+        return
+
+    if frame_idx >= len(pc_arr):
+        cprint(f"Invalid frame_idx: {frame_idx}, total frames: {len(pc_arr)}", "red")
+        return
+
+    pc = pc_arr[frame_idx]  # shape: (N, 6), columns: [x, y, z, r, g, b]
+    visualize_pointcloud(pc)
 
 
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[1] + "/episode_15.h5"
+    episode_path = ROOT_DIR[3] + "/episode_11.h5"
+    zarr_path = ROOT_DIR[4]
     print(episode_path)
     # exit()
-    # visualize_frame("front",250,episode_path)
-    read_values(episode_path,"label")
-    read_values(episode_path,"action")
+    # visualize_h5_frame("front",250,episode_path)
+    visualize_zarr_frame(zarr_path,249)
+    # read_values(episode_path,"label")
+    # read_values(episode_path,"action")
     # read_structure(episode_path)
 
   

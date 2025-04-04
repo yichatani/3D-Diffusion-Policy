@@ -91,7 +91,7 @@ def main():
         with h5py.File(path, "r") as f:
             agent_pos = f["agent_pos"][:]
             action = f["action"][:]
-            rgb = f[f"{camera}/rgb"][:]
+            rgb = f[f"{camera}/rgb"][:] # range in [0,255]
             depth = f[f"{camera}/depth"][:]
             
 
