@@ -36,5 +36,6 @@ def main(cfg):
     workspace.run()
 
 # CUDA_VISIBLE_DEVICES=2,3 nohup torchrun --nproc_per_node=2 train_Isaac_ddp.py > train_$(date +%Y-%m-%d_%H-%M-%S).log 2>&1 &
+# torchrun --nproc_per_node=2 train_Isaac_ddp.py
 if __name__ == "__main__":
     main()

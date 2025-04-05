@@ -5,9 +5,12 @@ name: isaac_grasping
 dataset:
   _target_: diffusion_policy_3d.dataset.my_dataset.IsaacZarrDataset
   zarr_path: data/positive_1.zarr  # Dataset path
-  horizon: ${horizon}
-  pad_before: ${eval:'${n_obs_steps}-1'}
-  pad_after: ${eval:'${n_action_steps}-1'}
+  # horizon: ${horizon}
+  # pad_before: ${eval:'${n_obs_steps}-1'}
+  # pad_after: ${eval:'${n_action_steps}-1'}
+  horizon: 16
+  pad_before: 5
+  pad_after: 15
   seed: 42
   val_ratio: 0.1
   max_train_episodes: null
