@@ -4,7 +4,7 @@ name: isaac_grasping
 
 dataset:
   _target_: diffusion_policy_3d.dataset.my_dataset.IsaacZarrDataset
-  zarr_path: data/episodes.zarr  # Dataset path
+  zarr_path: data/positive_1.zarr  # Dataset path
   horizon: ${horizon}
   pad_before: ${eval:'${n_obs_steps}-1'}
   pad_after: ${eval:'${n_action_steps}-1'}
