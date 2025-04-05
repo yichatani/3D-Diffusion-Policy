@@ -58,9 +58,10 @@ policy:
     normal_channel: false
 
 # ----------------------
-# EMA 禁用
+# EMA 
 ema:
   _target_: diffusion_policy_3d.model.diffusion.ema_model.EMAModel
+  model: ${policy}
   update_after_step: 0
   inv_gamma: 1.0
   power: 0.75
@@ -77,14 +78,14 @@ logging:
 # ----------------------
 # Dataloader
 dataloader:
-  batch_size: 1
-  shuffle: false
-  num_workers: 0
+  batch_size: 128
+  shuffle: true
+  num_workers: 4
 
 val_dataloader:
-  batch_size: 1
-  shuffle: false
-  num_workers: 0
+  batch_size: 128
+  shuffle: true
+  num_workers: 4
 
 # ----------------------
 # Optimizer
@@ -97,15 +98,15 @@ optimizer:
 training:
   seed: 42
   debug: False
-  num_epochs: 5
+  num_epochs: 150
   gradient_accumulate_every: 1
   max_train_steps: null
   max_val_steps: null
-  val_every: 9999
+  val_every: 5
   rollout_every: 9999
-  sample_every: 1
-  checkpoint_every: 1
-  use_ema: false
+  sample_every: 5
+  checkpoint_every: 10
+  use_ema: true
   resume: false
   device: cuda
   tqdm_interval_sec: 1.0
