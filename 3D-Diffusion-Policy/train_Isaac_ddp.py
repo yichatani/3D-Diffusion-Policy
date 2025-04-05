@@ -37,5 +37,6 @@ def main(cfg):
 
 # torchrun --nproc_per_node=2 train_Isaac_ddp.py
 # tmux new -s dp3_train -d "CUDA_VISIBLE_DEVICES=2,3 torchrun --nproc_per_node=2 train_Isaac_ddp.py | tee train_$(date +%F_%H-%M-%S).log"
+# tmux attach -t dp3_train
 if __name__ == "__main__":
     main()
