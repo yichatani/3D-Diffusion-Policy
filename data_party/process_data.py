@@ -174,7 +174,15 @@ def visualize_zarr_frame(zarr_path, frame_idx):
     pc = pc_arr[frame_idx]  # shape: (N, 6), columns: [x, y, z, r, g, b]
     visualize_pointcloud(pc)
 
-
+def read_zarr_meta(zarr_path, meta_key:str) -> None:
+    cprint(f"Loading Zarr dataset from: {zarr_path}", "cyan")
+    root = zarr.open(zarr_path, mode='r')
+    try:
+        meta_data = root['meta'][meta_key]
+    except Exception as e:
+        cprint(f"Error loading meta data: {e}", "red")
+        return
+    print(meta_data[:])
 
 if __name__ == "__main__":
     episode_path = ROOT_DIR[3] + "/episode_11.h5"
@@ -182,7 +190,11 @@ if __name__ == "__main__":
     print(episode_path)
     # exit()
     # visualize_h5_frame("front",250,episode_path)
-    visualize_zarr_frame(zarr_path,249)
+
+    read_zarr_meta(zarr_path,"episode_ends")
+    visualize_zarr_frame(zarr_path,747)
+    
+
     # read_values(episode_path,"label")
     # read_values(episode_path,"action")
     # read_structure(episode_path)
