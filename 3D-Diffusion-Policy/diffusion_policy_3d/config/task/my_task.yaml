@@ -4,13 +4,12 @@ name: isaac_grasping
 
 dataset:
   _target_: diffusion_policy_3d.dataset.my_dataset.IsaacZarrDataset
-  zarr_path: data/positive_1.zarr  # Dataset path
+  zarr_path: data/positive_Z.zarr  # Dataset path
   # horizon: ${horizon}
   # pad_before: ${eval:'${n_obs_steps}-1'}
   # pad_after: ${eval:'${n_action_steps}-1'}
-  horizon: 16
-  pad_before: 5
-  pad_after: 15
+  n_obs_steps: 2
+  n_action_steps: 5
   seed: 42
   val_ratio: 0.1
   max_train_episodes: null
@@ -28,7 +27,7 @@ shape_meta: &shape_meta
       type: point_cloud
     agent_pos:
       shape: [7]
-      type: low_dimx
+      type: low_dim
   action:
     shape: [7]
 
