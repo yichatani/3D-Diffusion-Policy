@@ -67,7 +67,7 @@ class IsaacZarrDataset(BaseDataset):
 
         self.n_obs_steps = n_obs_steps
         self.n_action_steps = n_action_steps
-        self.horizon = n_obs_steps + n_action_steps
+        self.horizon = n_obs_steps + n_action_steps - 1
 
         # padding ：pad_before = n_obs_steps - 1, pad_after = n_action_steps - 1
         self.pad_before = pad_before if pad_before is not None else n_obs_steps - 1
