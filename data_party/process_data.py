@@ -19,6 +19,7 @@ from visualizer.pointcloud import visualize_pointcloud
 ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
             "/home/ani/my_Isaac_main/my_Isaac/episodes",
             "/home/ani/astar/my_Isaac/episodes",
+            "/home/ani/astar/my_Isaac/episodes/positive",
             "/home/ani/Dataset/episodes/positive",
             "/home/ani/Dataset/positive_1.zarr"]
 # ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
@@ -98,7 +99,7 @@ def preprocess_image(image, img_size=84):
     image = image.permute(1, 2, 0).cpu().numpy()  # CHW -> HWC
     return image
 
-def preprocess_point_cloud(points, num_points=1024 * 3, use_cuda=True):
+def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
     extrinsics_matrix = np.array([
         [-0.61193014,  0.2056703,  -0.76370232,  2.22381139],
         [ 0.78640693,  0.05530829, -0.61522771,  1.06986129],
@@ -106,7 +107,7 @@ def preprocess_point_cloud(points, num_points=1024 * 3, use_cuda=True):
         [ 0.,          0.,          0.,          1.        ],
     ])
 
-    WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0, 1.5]]
+    WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0.128, 1.5]]
     # WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.80], [0, 1.5]]
 
     # point_xyz = points[..., :3] * 0.00025
@@ -142,6 +143,7 @@ def visualize_h5_frame(camera,t,episode_path):
         rgb = f[f"{camera}/rgb"][:]
         depth = f[f"{camera}/depth"][:]
         
+        print(f"{camera}/rgb", rgb.shape)
         pc_raw = reconstruct_pointcloud(rgb[t], depth[t])
         if pc_raw.shape[0] < 32:
             raise ValueError(f"[Warning] Skipping frame {t} in {episode_path} due to empty point cloud.")
@@ -185,14 +187,14 @@ def read_zarr_meta(zarr_path, meta_key:str) -> None:
     print(meta_data[:])
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[3] + "/episode_11.h5"
+    episode_path = ROOT_DIR[3] + "/episode_137.h5"
     zarr_path = ROOT_DIR[4]
     print(episode_path)
     # exit()
-    # visualize_h5_frame("front",250,episode_path)
+    visualize_h5_frame("front",106,episode_path)
 
-    read_zarr_meta(zarr_path,"episode_ends")
-    visualize_zarr_frame(zarr_path,747)
+    # read_zarr_meta(zarr_path,"episode_ends")
+    # visualize_zarr_frame(zarr_path,747)
     
 
     # read_values(episode_path,"label")
