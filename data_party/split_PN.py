@@ -3,7 +3,7 @@ import os
 import shutil
 
 ROOT_DIR = ["/home/ani/Dataset/episodes","/home/ani/astar/my_Isaac/episodes"] 
-POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive")
+POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive_Z")
 NEGATIVE_DIR = os.path.join(ROOT_DIR[1], "negative")
 
 def ensure_dir(path):
@@ -94,7 +94,7 @@ def count_h5_files(root_dir):
 
 if __name__ == "__main__":
     
-    # split_PN(ROOT_DIR[1])
+    split_PN(ROOT_DIR[1])
     count_h5_files(POSITIVE_DIR)
     # count_h5_files(NEGATIVE_DIR)
     

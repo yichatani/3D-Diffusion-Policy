@@ -107,8 +107,9 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
         [ 0.,          0.,          0.,          1.        ],
     ])
 
-    WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.50], [0.128, 1.5]]
+    WORK_SPACE = [[-0.12, 1.12], [-0.40, 0.80], [0.128, 1.5]]
     # WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.80], [0, 1.5]]
+    # WORK_SPACE = [[-2, 2], [-2, 2], [-2, 2]]
 
     # point_xyz = points[..., :3] * 0.00025
     point_xyz = points[..., :3]
@@ -187,7 +188,7 @@ def read_zarr_meta(zarr_path, meta_key:str) -> None:
     print(meta_data[:])
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[3] + "/episode_137.h5"
+    episode_path = ROOT_DIR[2] + "/episode_63.h5"
     zarr_path = ROOT_DIR[4]
     print(episode_path)
     # exit()
