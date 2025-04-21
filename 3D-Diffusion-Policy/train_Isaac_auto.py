@@ -44,5 +44,7 @@ def main(cfg):
     if cfg.distributed:
         dist.destroy_process_group()
 
+# tmux new -s dp3_train
+# python train_Isaac_auto.py
 if __name__ == "__main__":
     main()

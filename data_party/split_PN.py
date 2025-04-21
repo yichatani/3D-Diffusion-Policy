@@ -3,7 +3,7 @@ import os
 import shutil
 
 ROOT_DIR = ["/home/ani/Dataset/episodes","/home/ani/astar/my_Isaac/episodes"] 
-POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive_Z")
+POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive")
 NEGATIVE_DIR = os.path.join(ROOT_DIR[1], "negative")
 
 def ensure_dir(path):

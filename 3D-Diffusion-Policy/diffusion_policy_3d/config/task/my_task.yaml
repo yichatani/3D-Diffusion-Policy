@@ -4,7 +4,7 @@ name: isaac_grasping
 
 dataset:
   _target_: diffusion_policy_3d.dataset.my_dataset.IsaacZarrDataset
-  zarr_path: data/positive_Z.zarr  # Dataset path
+  zarr_path: data/positive.zarr  # Dataset path
   n_obs_steps: 3
   n_action_steps: 6
   seed: 42

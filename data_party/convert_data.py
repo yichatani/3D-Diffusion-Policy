@@ -14,7 +14,7 @@ from pathlib import Path
 from pytorch3d.ops import sample_farthest_points
 from process_data import reconstruct_pointcloud
 
-ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
+ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data",
             "/home/ani/my_Isaac_main/my_Isaac/episodes",
             "/home/ani/astar/my_Isaac/episodes",
             "/home/ani/astar/my_Isaac/episodes/positive",
@@ -63,7 +63,7 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
 def main():
 
     hdf5_dir = ROOT_DIR[2] + "/positive"
-    save_zarr_path = ROOT_DIR[2] + "/positive_Z.zarr"
+    save_zarr_path = ROOT_DIR[0] + "/positive.zarr"
     camera = 'front'  # change to 'in_hand' or 'up' if needed
 
     episode_paths = sorted([
