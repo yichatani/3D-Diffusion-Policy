@@ -98,17 +98,21 @@ def main():
 
             T = agent_pos.shape[0]
             for t in range(T):
-                img = preprocess_image(rgb[t])
-                dep = preprocess_image(np.expand_dims(depth[t], axis=-1)).squeeze(-1)
                 
-                pc_raw = reconstruct_pointcloud(rgb[t], depth[t])
+                try:
+                    pc_raw = reconstruct_pointcloud(rgb[t], depth[t])
+                except Exception as e:
+                    print(f"[Error] Point cloud reconstruction failed at {t}: {e}")
+                    continue
+
                 if pc_raw.shape[0] < 32:
                     print(f"[Warning] Skipping frame {t} in {path} due to empty point cloud.")
                     continue
 
+                img = preprocess_image(rgb[t])
+                dep = preprocess_image(np.expand_dims(depth[t], axis=-1)).squeeze(-1)
                 pc = preprocess_point_cloud(pc_raw, use_cuda=True)
               
-
                 img_list.append(img)
                 depth_list.append(dep)
                 pc_list.append(pc)
