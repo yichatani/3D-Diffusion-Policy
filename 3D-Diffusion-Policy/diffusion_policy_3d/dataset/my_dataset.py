@@ -74,6 +74,7 @@ class IsaacZarrDataset(BaseDataset):
         self.pad_after = pad_after if pad_after is not None else n_action_steps - 1
 
         self.replay_buffer = ReplayBuffer.create_from_path(zarr_path)
+        assert self.replay_buffer.n_episodes > 0, f"Replay buffer is empty. Please check the path: {zarr_path}"
 
         val_mask = get_val_mask(self.replay_buffer.n_episodes, val_ratio=val_ratio, seed=seed)
         train_mask = downsample_mask(~val_mask, max_n=max_train_episodes, seed=seed)
@@ -93,6 +94,10 @@ class IsaacZarrDataset(BaseDataset):
     def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
         sample = self.sampler.sample_sequence(idx)
         data = self._sample_to_data(sample)
+        if idx == 0:
+            print(f"[Dataset] agent_pos shape: {data['obs']['agent_pos'].shape}")
+            print(f"[Dataset] point_cloud shape: {data['obs']['point_cloud'].shape}")
+            print(f"[Dataset] action shape: {data['action'].shape}")
         return dict_apply(data, torch.from_numpy)
 
     def _sample_to_data(self, sample):

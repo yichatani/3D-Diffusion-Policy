@@ -5,7 +5,7 @@ import pathlib
 from diffusion_policy_3d.dataset.my_dataset import IsaacZarrDataset
 
 ROOT_DIR = str(pathlib.Path(__file__).parent.resolve())
-ZARR_PATH = os.path.join(ROOT_DIR, "data", "positive_Z.zarr")
+ZARR_PATH = os.path.join(ROOT_DIR, "data", "positive.zarr")
 
 dataset = IsaacZarrDataset(
     zarr_path=ZARR_PATH,
