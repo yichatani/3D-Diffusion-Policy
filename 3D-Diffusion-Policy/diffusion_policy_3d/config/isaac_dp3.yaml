@@ -5,10 +5,10 @@ defaults:
 name: train_dp3
 task_name: ${task.name}
 shape_meta: ${task.shape_meta}
-exp_name: "dp3_test"
+exp_name: "dp3_grasp"
 
-n_obs_steps: 3
-n_action_steps: 6
+n_obs_steps: 2
+n_action_steps: 3
 horizon: ${eval:${n_obs_steps} + ${n_action_steps} - 1}
 n_latency_steps: 0
 dataset_obs_steps: ${n_obs_steps}
@@ -71,47 +71,60 @@ ema:
 # ----------------------
 # Logging
 logging:
-  group: dp3_grasping
-  name: dp3_banana
-  project: my_dp3_project
+  group: ${exp_name}
+  project: dp3
+  name: seed_${training.seed}
+  mode: online
+  resume: true
+  tags: 
+    - dp3
+    - diffusion
+    - grasping
 
 # ----------------------
 # Dataloader
 dataloader:
   batch_size: 128
   shuffle: true
-  num_workers: 4
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
 
 val_dataloader:
   batch_size: 128
   shuffle: false
-  num_workers: 4
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
 
 # ----------------------
 # Optimizer
 optimizer:
-  _target_: torch.optim.Adam
-  lr: 3e-4
+  _target_: torch.optim.AdamW
+  lr: 1.0e-4
+  betas: [0.95, 0.999]
+  eps: 1.0e-8
+  weight_decay: 1.0e-6
 
 # ----------------------
 # Training config
 training:
+  device: "cuda:0"
   seed: 42
-  debug: False
-  num_epochs: 1000
+  debug: false
+  resume: true
+  num_epochs: 2000
   gradient_accumulate_every: 1
+  use_ema: true
+  lr_scheduler: cosine
+  lr_warmup_steps: 500
   max_train_steps: null
   max_val_steps: null
-  val_every: 50
-  rollout_every: 9999
-  sample_every: 25
-  checkpoint_every: 25
-  use_ema: true
-  resume: false
-  device: cuda
+  val_every: 1
+  rollout_every: 999999
+  sample_every: 999999
+  checkpoint_every: 200
   tqdm_interval_sec: 1.0
-  lr_scheduler: cosine
-  lr_warmup_steps: 10
 
 # ----------------------
 # Checkpoint config
@@ -123,6 +136,7 @@ checkpoint:
     k: 1
     monitor_key: train_action_mse_error
     mode: min
+    format_str: 'epoch={epoch:04d}-train_mse={train_action_mse_error:.3f}.ckpt'
 
 # ----------------------
 # Hydra logging dir

@@ -1,3 +1,8 @@
+"""
+
+Duplicated: Not use any more.
+
+"""
 from datetime import datetime
 import dill
 import os
@@ -9,8 +14,8 @@ ZARR_PATH = os.path.join(ROOT_DIR, "data", "positive_cube.zarr")
 
 dataset = IsaacZarrDataset(
     zarr_path=ZARR_PATH,
-    n_obs_steps=3,
-    n_action_steps=6,
+    n_obs_steps=2,
+    n_action_steps=3,
     seed=42,
     val_ratio=0.1,
     max_train_episodes=None

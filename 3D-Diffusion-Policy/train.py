@@ -108,9 +108,10 @@ class TrainDP3Workspace:
         val_dataset = dataset.get_validation_dataset()
         val_dataloader = DataLoader(val_dataset, **cfg.val_dataloader)
 
-        self.model.set_normalizer(normalizer)
+        self.normalizer = normalizer
+        self.model.set_normalizer(self.normalizer)
         if cfg.training.use_ema:
-            self.ema_model.set_normalizer(normalizer)
+            self.ema_model.set_normalizer(self.normalizer)
 
         # configure lr scheduler
         lr_scheduler = get_scheduler(
@@ -382,7 +383,7 @@ class TrainDP3Workspace:
         if exclude_keys is None:
             exclude_keys = tuple(self.exclude_keys)
         if include_keys is None:
-            include_keys = tuple(self.include_keys) + ('_output_dir',)
+            include_keys = tuple(self.include_keys) + ('_output_dir', 'normalizer')
 
         path.parent.mkdir(parents=False, exist_ok=True)
         payload = {
@@ -447,6 +448,10 @@ class TrainDP3Workspace:
         for key in include_keys:
             if key in payload['pickles']:
                 self.__dict__[key] = dill.loads(payload['pickles'][key])
+        if 'normalizer' in include_keys and hasattr(self, 'model'):
+            self.model.set_normalizer(self.normalizer)
+            if self.ema_model is not None:
+                self.ema_model.set_normalizer(self.normalizer)
     
     def load_checkpoint(self, path=None, tag='latest',
             exclude_keys=None, 
