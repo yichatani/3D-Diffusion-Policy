@@ -46,5 +46,7 @@ def main(cfg):
 
 # tmux new -s dp3_train
 # python train_Isaac_auto.py
+# CUDA_VISIBLE_DEVICES=2,3 torchrun --nproc_per_node=2 train_Isaac_auto.py
+# CUDA_VISIBLE_DEVICES=3 python train_Isaac_auto.py
 if __name__ == "__main__":
     main()
