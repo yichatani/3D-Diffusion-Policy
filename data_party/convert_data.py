@@ -62,8 +62,8 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
 
 def main():
 
-    hdf5_dir = ROOT_DIR[2] + "/positive"
-    save_zarr_path = ROOT_DIR[0] + "/positive.zarr"
+    hdf5_dir = ROOT_DIR[2] + "/positive_banana"
+    save_zarr_path = ROOT_DIR[0] + "/positive_banana.zarr"
     camera = 'front'  # change to 'in_hand' or 'up' if needed
 
     episode_paths = sorted([

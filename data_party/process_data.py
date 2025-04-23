@@ -192,7 +192,7 @@ if __name__ == "__main__":
     zarr_path = ROOT_DIR[4]
     print(episode_path)
     # exit()
-    visualize_h5_frame("front",139,episode_path)
+    visualize_h5_frame("front",99,episode_path)
 
     # read_zarr_meta(zarr_path,"episode_ends")
     # visualize_zarr_frame(zarr_path,747)
