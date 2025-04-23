@@ -122,7 +122,7 @@ training:
   max_val_steps: null
   val_every: 1
   rollout_every: 999999
-  sample_every: 999999
+  sample_every: 1
   checkpoint_every: 200
   tqdm_interval_sec: 1.0
 
