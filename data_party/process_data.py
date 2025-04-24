@@ -19,7 +19,7 @@ from visualizer.pointcloud import visualize_pointcloud
 ROOT_DIR = ["/home/ani/3D-Diffusion-Policy/3D-Diffusion-Policy/data/episodes/positive",
             "/home/ani/my_Isaac_main/my_Isaac/episodes",
             "/home/ani/astar/my_Isaac/episodes",
-            "/home/ani/astar/my_Isaac/episodes/positive",
+            "/home/ani/astar/my_Isaac/episodes/positive_cube1",
             "/home/ani/Dataset/episodes/positive",
             "/home/ani/Dataset/positive_1.zarr"]
 # ROOT_DIR_2 = "/home/ani/astar/my_Isaac/episodes"
@@ -107,7 +107,7 @@ def preprocess_point_cloud(points, num_points=1024, use_cuda=True):
         [ 0.,          0.,          0.,          1.        ],
     ])
 
-    WORK_SPACE = [[-0.12, 1.12], [-0.40, 0.80], [0.128, 1.5]]
+    WORK_SPACE = [[-0.12, 1.12], [-1.00, 1.00], [0.128, 1.5]]
     # WORK_SPACE = [[-0.12, 1.12], [-0.30, 0.80], [0, 1.5]]
     # WORK_SPACE = [[-2, 2], [-2, 2], [-2, 2]]
 
@@ -188,7 +188,7 @@ def read_zarr_meta(zarr_path, meta_key:str) -> None:
     print(meta_data[:])
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[2] + "/episode_0.h5"
+    episode_path = ROOT_DIR[3] + "/episode_387.h5"
     zarr_path = ROOT_DIR[4]
     print(episode_path)
     # exit()
