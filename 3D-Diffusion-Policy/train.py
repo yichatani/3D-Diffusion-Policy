@@ -305,9 +305,9 @@ class TrainDP3Workspace:
                 
             # checkpoint
             if (self.epoch % cfg.training.checkpoint_every) == 0 and cfg.checkpoint.save_ckpt:
-                # checkpointing
                 if cfg.checkpoint.save_last_ckpt:
-                    self.save_checkpoint()
+                    self.save_checkpoint(include_keys=('normalizer', '_output_dir', 'global_step', 'epoch'))
+
                 if cfg.checkpoint.save_last_snapshot:
                     self.save_snapshot()
 
@@ -323,7 +323,7 @@ class TrainDP3Workspace:
                 topk_ckpt_path = topk_manager.get_ckpt_path(metric_dict)
 
                 if topk_ckpt_path is not None:
-                    self.save_checkpoint(path=topk_ckpt_path)
+                    self.save_checkpoint(path=topk_ckpt_path, include_keys=('normalizer', '_output_dir', 'global_step', 'epoch'))
             # ========= eval end for this epoch ==========
             policy.train()
 
