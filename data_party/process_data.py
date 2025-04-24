@@ -44,12 +44,9 @@ def read_values(path, key):
     with h5py.File(path, 'r') as f:
         dset = f[key]
         print("Dataset shape:", dset.shape)
-        print("First first value:", dset[0])
+        print("First value:", dset[0])
         return dset[0]
     
-
-
-
 
 def reconstruct_pointcloud(rgb, depth, visualize=False):
     """
@@ -188,14 +185,14 @@ def read_zarr_meta(zarr_path, meta_key:str) -> None:
     print(meta_data[:])
 
 if __name__ == "__main__":
-    episode_path = ROOT_DIR[3] + "/episode_387.h5"
-    zarr_path = ROOT_DIR[4]
+    episode_path = ROOT_DIR[1] + "/episode_169.h5"
+    zarr_path = ROOT_DIR[1] + "/positive_cube_ani.zarr" 
     print(episode_path)
     # exit()
-    visualize_h5_frame("front",99,episode_path)
+    # visualize_h5_frame("front",109,episode_path)
 
     # read_zarr_meta(zarr_path,"episode_ends")
-    # visualize_zarr_frame(zarr_path,747)
+    visualize_zarr_frame(zarr_path,109+2*110)
     
 
     # read_values(episode_path,"label")

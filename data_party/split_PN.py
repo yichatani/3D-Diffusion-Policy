@@ -2,9 +2,9 @@ import h5py
 import os
 import shutil
 
-ROOT_DIR = ["/home/ani/Dataset/episodes","/home/ani/astar/my_Isaac/episodes"] 
-POSITIVE_DIR = os.path.join(ROOT_DIR[1], "positive")
-NEGATIVE_DIR = os.path.join(ROOT_DIR[1], "negative")
+ROOT_DIR = ["/home/ani/Dataset/episodes","/home/ani/astar/my_Isaac/episodes","/home/ani/my_Isaac_main/my_Isaac/episodes"] 
+POSITIVE_DIR = os.path.join(ROOT_DIR[2], "positive")
+NEGATIVE_DIR = os.path.join(ROOT_DIR[2], "negative")
 
 def ensure_dir(path):
     """
@@ -94,7 +94,7 @@ def count_h5_files(root_dir):
 
 if __name__ == "__main__":
     
-    split_PN(ROOT_DIR[1])
+    split_PN(ROOT_DIR[2])
     count_h5_files(POSITIVE_DIR)
     # count_h5_files(NEGATIVE_DIR)
     
