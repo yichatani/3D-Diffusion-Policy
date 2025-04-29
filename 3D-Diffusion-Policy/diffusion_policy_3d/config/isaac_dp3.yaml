@@ -16,7 +16,7 @@ keypoint_visible_rate: 1.0
 obs_as_global_cond: true
 
 policy:
-  _target_: diffusion_policy_3d.policy.dp3.DP3
+  _target_: diffusion_policy_3d.policy.ani_dp3.DP3
   use_point_crop: true
   condition_type: film
   use_down_condition: true
@@ -32,6 +32,7 @@ policy:
   n_action_steps: ${n_action_steps}
   n_groups: 8
   n_obs_steps: ${n_obs_steps}
+  phase_latent_dim: 64
 
   noise_scheduler:
     _target_: diffusers.schedulers.scheduling_ddim.DDIMScheduler
@@ -73,7 +74,7 @@ ema:
 logging:
   group: ${exp_name}
   project: dp3
-  name: seed_${training.seed}
+  name: phase_latent_${training.seed}
   mode: online
   resume: true
   tags: 
@@ -120,9 +121,9 @@ training:
   lr_warmup_steps: 500
   max_train_steps: null
   max_val_steps: null
-  val_every: 1
+  val_every: 5
   rollout_every: 999999
-  sample_every: 1
+  sample_every: 5
   checkpoint_every: 200
   tqdm_interval_sec: 1.0
 

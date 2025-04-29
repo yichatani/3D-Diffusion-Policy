@@ -1,4 +1,6 @@
 # diffusion_policy_3d/config/task/my_task.yaml
+defaults:
+  - _self_
 
 name: isaac_grasping
 
@@ -13,6 +15,9 @@ dataset:
   pad_before: ${eval:'${n_obs_steps}-1'}
   pad_after: ${eval:'${n_action_steps}-1'}
 
+phase_encoder:
+  input_dim: 7
+  latent_dim: ${policy.phase_latent_dim}
 
 env_runner:
   _target_: diffusion_policy_3d.env_runner.my_env_runner.DummyRunner

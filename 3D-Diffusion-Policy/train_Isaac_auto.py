@@ -3,7 +3,8 @@ import sys
 import pathlib
 import torch
 import torch.distributed as dist
-from train import TrainDP3Workspace
+# from train import TrainDP3Workspace
+from phase_train import TrainDP3Workspace
 import hydra
 from omegaconf import OmegaConf
 
